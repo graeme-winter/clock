@@ -21,3 +21,13 @@ which will return many things including the `utc_offset` - which is needed to ma
 ### LED drivers
 
 Implemented through a couple of chips to control lights + 8 x 24 matrix. Could use µPython framebuffer for that? Would give some stuff free. OK, looks like there are two (three) chips involved in driving the LED matrix: one 3 bit -> 8 demultiplexer on + and 2 x 16-way controlled by SPI on -, where the first does columns 0...15 and the second does the last 8. Brightness therefore will need to be manually controlled etc. -> 🤔 much.
+
+Wiring:
+
+- rows[0] -> GPIO16
+- rows[1] -> GPIO18
+- rows[2] -> GPIO20
+
+i.e. to get row 5 lit set GPIO16 and 20 to high, I assume.
+
+SPI connections on GPIO10-13 (CLK, TX, RX, enable). Implementation I am looking at here appears to do this by bit bashing? In µPython? Not using hardware SPI. Or is this some plain UART serial? Data sheet time.
