@@ -33,10 +33,10 @@ def write_cols(x):
 oe.off()
 
 while True:
-    for j in range(8):
+    for j in range(1, 8):
         for k in range(3):
             rows[k].value(j & (1 << k))
-        for j in range(32):
-            x = 1 << (31 - j)
+        for j in range(22):
+            x = 1 << (29 - j)
             write_cols(x)
-            time.sleep(0.05)
+            time.sleep(0.1)
