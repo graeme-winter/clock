@@ -51,15 +51,10 @@ def display(pixels):
             en.on()
             en.off()
             oe.off()
-            time.sleep(0.001)
+            time.sleep(0.002)
 
 
 _thread.start_new_thread(display, (pixels,))
-
-
-def write_cols(j, x):
-    """Write bits from x to cols"""
-    pixels[j] = byteswap(x)
 
 
 font = {
@@ -76,17 +71,27 @@ font = {
 }
 
 
-def render(number):
+def render(number, s):
     digits = list(map(int, reversed(str(number))))
+
+    if s % 2 == 0:
+        bip = 1 << 11
+    else:
+        bip = 0
+
     for r in range(7):
         row = 0
         for j, d in enumerate(digits):
             row = row | (font[d][r] << (6 * j))
-        write_cols(r + 1, row << 8)
+        if r in (3, 5):
+            row |= bip
+        pixels[r + 1] = byteswap(row << 8)
 
 
 while True:
     t = time.localtime()
     now = 100 * t[3] + t[4]
-    render(now)
-    time.sleep(1)
+    if now >= 1300:
+        now -= 1200
+    render(now, t[6])
+    time.sleep(0.1)
