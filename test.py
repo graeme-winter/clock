@@ -58,40 +58,34 @@ _thread.start_new_thread(display, (pixels,))
 
 
 font = {
-    0: (14, 17, 19, 21, 25, 17, 14),
-    1: (4, 12, 4, 4, 4, 4, 14),
-    2: (14, 17, 1, 2, 4, 8, 31),
-    3: (31, 2, 4, 2, 1, 17, 14),
-    4: (2, 6, 10, 18, 31, 2, 2),
-    5: (31, 16, 30, 1, 1, 17, 14),
-    6: (6, 8, 16, 30, 17, 17, 14),
-    7: (31, 1, 2, 4, 8, 8, 8),
-    8: (14, 17, 17, 14, 17, 17, 14),
-    9: (14, 17, 17, 15, 1, 2, 12),
+    0: 0x69BD996,
+    1: 0x2622222,
+    2: 0x691348F,
+    3: 0x6912196,
+    4: 0x359F111,
+    5: 0x6986196,
+    6: 0x698E996,
+    7: 0xF112222,
+    8: 0x6996996,
+    9: 0x6997196,
 }
 
 
 def render(number, s):
     digits = list(map(int, reversed(str(number))))
 
-    if s % 2 == 0:
-        bip = 1 << 11
-    else:
-        bip = 0
-
     for r in range(7):
         row = 0
         for j, d in enumerate(digits):
-            row = row | (font[d][r] << (6 * j))
-        if r in (3, 5):
-            row |= bip
+            o = (0, 5, 12, 17)[j]
+            row = row | ((font[d] >> (4 * (6 - r))) & 0xF) << o
+        if r in (2, 4):
+            row |= 1 << 10
         pixels[r + 1] = byteswap(row << 8)
 
 
 while True:
     t = time.localtime()
     now = 100 * t[3] + t[4]
-    if now >= 1300:
-        now -= 1200
-    render(now, t[6])
+    render(now, t[5])
     time.sleep(0.1)
