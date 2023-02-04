@@ -48,10 +48,16 @@ def display(pixels):
             oe.on()
             spi.write(pixels[j : j + 1])
 
+            # pulse to lock
             en.on()
             en.off()
+
+            # dim
+            time.sleep_ms(1)
+
+            # lights on
             oe.off()
-            time.sleep(0.002)
+            time.sleep_ms(1)
 
 
 _thread.start_new_thread(display, (pixels,))
@@ -60,7 +66,7 @@ _thread.start_new_thread(display, (pixels,))
 font = {
     0: 0x69BD996,
     1: 0x2622222,
-    2: 0x691348F,
+    2: 0x691248F,
     3: 0x6912196,
     4: 0x359F111,
     5: 0x6986196,
