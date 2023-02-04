@@ -4,6 +4,11 @@ from uctypes import addressof
 import array
 import _thread
 
+# set the time
+from ntp import set_time
+
+set_time()
+
 
 @micropython.viper
 def byteswap(a: uint) -> uint:
@@ -28,7 +33,7 @@ def display(pixels):
     oe.off()
 
     # columns controlled over SPI
-    spi = SPI(1, 10_000_000, sck=Pin(10), mosi=Pin(11))
+    spi = SPI(1, 2_000_000, sck=Pin(10), mosi=Pin(11))
 
     # row control pins
     rows = [Pin(j, Pin.OUT) for j in (16, 18, 22)]
@@ -40,12 +45,11 @@ def display(pixels):
         for j in range(8):
             for k in range(3):
                 rows[k].value(j & (1 << k))
+            oe.on()
             spi.write(pixels[j : j + 1])
 
             en.on()
             en.off()
-            oe.on()
-            time.sleep(0.001)
             oe.off()
             time.sleep(0.001)
 
@@ -81,6 +85,8 @@ def render(number):
         write_cols(r + 1, row << 8)
 
 
-for value in range(1999):
-    render(value)
+while True:
+    t = time.localtime()
+    now = 100 * t[3] + t[4]
+    render(now)
     time.sleep(1)
