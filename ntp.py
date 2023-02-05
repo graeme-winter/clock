@@ -6,13 +6,14 @@ import machine
 
 from machine import Pin
 
+# offset between UNIX epoch and µPython one
 NTP_DELTA = 2208988800
 host = "pool.ntp.org"
 
+# TODO use this in future
 tz_url = "http://worldtimeapi.org/api/timezone/Europe/London"
 
-led = Pin("LED", Pin.OUT)
-
+# set these for your own needs
 from wifi import ssid, password
 
 
@@ -33,26 +34,23 @@ def set_time():
     machine.RTC().datetime((tm[0], tm[1], tm[2], tm[6] + 1, tm[3], tm[4], tm[5], 0))
 
 
-wlan = network.WLAN(network.STA_IF)
-wlan.active(True)
-wlan.connect(ssid, password)
+def go_network():
+    wlan = network.WLAN(network.STA_IF)
+    wlan.active(True)
+    wlan.connect(ssid, password)
 
-max_wait = 10
-while max_wait > 0:
-    if wlan.status() < 0 or wlan.status() >= 3:
-        break
-    max_wait -= 1
-    print("waiting for connection...")
-    time.sleep(1)
+    max_wait = 10
+    while max_wait > 0:
+        if wlan.status() < 0 or wlan.status() >= 3:
+            break
+        max_wait -= 1
+        time.sleep(1)
 
-if wlan.status() != 3:
-    raise RuntimeError("network connection failed")
-else:
-    print("connected")
-    status = wlan.ifconfig()
-    print("ip = " + status[0])
+    if wlan.status() != 3:
+        raise RuntimeError("network connection failed")
+    else:
+        status = wlan.ifconfig()
 
-led.on()
+
+go_network()
 set_time()
-print(time.localtime())
-led.off()
