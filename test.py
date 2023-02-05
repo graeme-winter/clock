@@ -77,7 +77,7 @@ font = {
 }
 
 
-def render(number, s):
+def render(number):
     digits = list(map(int, reversed(str(number))))
 
     for r in range(7):
@@ -93,5 +93,5 @@ def render(number, s):
 while True:
     t = time.localtime()
     now = 100 * t[3] + t[4]
-    render(now, t[5])
+    render(now)
     time.sleep(0.1)
