@@ -2,7 +2,6 @@ import network
 import socket
 import time
 import struct
-import json
 import urequests
 import machine
 
@@ -19,12 +18,10 @@ def time_zone():
     response.close()
     if offset == "+00:00":
         return 0
-    # apply 3600s offset
     return 3600
 
 
 def set_time(offset=0):
-    NTP_DELTA = 2208988800
     host = "pool.ntp.org"
     NTP_QUERY = bytearray(48)
     NTP_QUERY[0] = 0x1B
@@ -37,8 +34,7 @@ def set_time(offset=0):
     finally:
         s.close()
     val = struct.unpack("!I", msg[40:44])[0]
-    t = val - NTP_DELTA
-    tm = time.gmtime(t + offset)
+    tm = time.gmtime(val - 2208988800 + offset)  # result - NTP epoch + UTC offset
     machine.RTC().datetime((tm[0], tm[1], tm[2], tm[6], tm[3], tm[4], tm[5], 0))
 
 
@@ -59,5 +55,3 @@ def connect(max_wait=10):
         raise RuntimeError("network connection failed")
 
     return wlan.ifconfig()
-
-
