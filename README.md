@@ -31,3 +31,46 @@ Wiring:
 i.e. to get row 5 lit set GPIO16 and 20 to high, I assume.
 
 SPI connections on GPIO10-13 (CLK, TX, RX, enable). Implementation I am looking at here appears to do this by bit bashing? In µPython? Not using hardware SPI. Or is this some plain UART serial? Data sheet time.
+
+## 2023-02-25 System Design
+
+### Display
+
+Two key methods: set up display, main display routine which is writen in Thumb assembly.
+
+Set up:
+
+- configure the GPIO pins which will be used
+- configure the SPI to the display controller
+
+Execute:
+
+- main routine taking the pointer to the data area, which will hold the pixel data, which will run on a 200 Hz update cycle
+
+### Update
+
+This will:
+
+- configure the wifi, abort if failed
+- fetch the current UTC from NTP server
+- fetch the current offset from UTC from t'nternet
+- apply this to the current system time
+
+Update will be triggered on (i) boot (ii) trigger from the middle button
+
+### IRQ handlers
+
+Buttons require IRQ handlers:
+
+- button top -> brighter (increment time on, decrement time off)
+- button bottom -> dimmer (reverse above)
+- middle - trigger update as above
+
+### Main routine
+
+Will sit in a tight loop doing:
+
+- read current time
+- render current time to scratch array
+- byte swap scratch array
+- copy scratch array to main
